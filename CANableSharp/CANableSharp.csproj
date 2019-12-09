@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <LangVersion>8.0</LangVersion>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FRC.Utilities" Version="3.0.3" />
+    <PackageReference Include="System.Memory" Version="4.5.3" />
+    <EmbeddedResource Include="..\x64\Release\CANableDLLx64.dll"/>
+    <EmbeddedResource Include="..\Release\CANableDLLx86.dll"/>
+  </ItemGroup>
+
+</Project>

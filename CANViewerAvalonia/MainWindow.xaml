@@ -5,12 +5,8 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="CANViewerAvalonia.MainWindow"
         Title="FRC CAN Viewer">
-  <StackPanel>
-    <StackPanel Orientation="Horizontal">
-      <Button Command="{Binding Refresh}">Refresh Interfaces</Button>
-      <ComboBox Items="{Binding CANDevices}"></ComboBox>
-    </StackPanel>
-    <DataGrid Items="{Binding CANMessages}" x:Name="DataGrid" AutoGenerateColumns="True" CanUserResizeColumns="True">
+    <StackPanel>
+        <DataGrid Items="{Binding CANMessages}" x:Name="DataGrid" AutoGenerateColumns="True" CanUserResizeColumns="True">
     </DataGrid>
   </StackPanel>
   <!--<dg:DataGrid ItemsSource="{Binding CANMessages, Mode=OneWay}" AutoGeneratingColumn="DataGrid_AutoGeneratingColumn" AlternatingRowBackground="Gainsboro"  AlternationCount="2">

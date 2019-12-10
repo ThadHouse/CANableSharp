@@ -141,7 +141,10 @@ namespace CANableSharp
             return true;
         }
 
-
+        public override string ToString()
+        {
+            return Name;
+        }
 
         #region IDisposable Support
         private bool disposedValue = false; // To detect redundant calls

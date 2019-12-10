@@ -9,7 +9,7 @@ namespace CANViewerAvalonia
     {
         public DeviceSelection()
         {
-            DataContext = new DeviceSelectionViewModel();
+            DataContext = new DeviceSelectionViewModel(this);
             this.InitializeComponent();
 #if DEBUG
             this.AttachDevTools();

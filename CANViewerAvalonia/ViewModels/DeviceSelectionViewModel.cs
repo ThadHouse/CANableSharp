@@ -13,6 +13,7 @@ namespace CANViewerAvalonia.ViewModels
     {
         public ObservableCollection<CANable> CANDevices { get; } = new ObservableCollection<CANable>();
 
+        private bool allowNullValue = false;
         private CANable selectedValue;
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -27,20 +28,33 @@ namespace CANViewerAvalonia.ViewModels
             get => selectedValue;
             set
             {
+                if (value == null && !allowNullValue) return;
                 selectedValue = value;
                 RaisePropertyChanged();
             }
         }
 
-        public DeviceSelectionViewModel()
+        private DeviceSelection window;
+
+        public DeviceSelectionViewModel(DeviceSelection window)
         {
+            this.window = window;
             if (Design.IsDesignMode) return;
-            Refresh();
+            window.Initialized += (o, e) =>
+            {
+                CandleInvoke.Initialize();
+                Refresh();
+            };
+            
         }
 
-        public void Select()
+        public async void Select()
         {
-
+            MainWindow mainWindow = new MainWindow();
+            mainWindow.Initialize(SelectedValue);
+            window.Hide();
+            object keepGoing = await mainWindow.ShowDialog<object>(window);
+            if (keepGoing == null) window.Close();
         }
 
         public void Refresh()
@@ -63,7 +77,9 @@ namespace CANViewerAvalonia.ViewModels
             } 
             else
             {
+                allowNullValue = true;
                 SelectedValue = null;
+                allowNullValue = false;
             }
         }
     }

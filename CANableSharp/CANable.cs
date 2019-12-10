@@ -9,6 +9,8 @@ namespace CANableSharp
 {
     public unsafe class CANable : IDisposable
     {
+        private bool opened = false;
+
         public static List<CANable> EnumerateDevices()
         {
             
@@ -53,6 +55,14 @@ namespace CANableSharp
             }
         }
 
+        public string Name
+        {
+            get
+            {
+                return Marshal.PtrToStringUni((IntPtr)candle_dev_get_name(handle));
+            }
+        }
+
         public DeviceState DeviceState
         {
             get
@@ -91,6 +101,7 @@ namespace CANableSharp
             {
                 throw new CANableException("Failed to open device", candle_dev_last_error(handle));
             }
+            opened = true;
         }
 
         public TimeSpan CurrentTime
@@ -144,7 +155,10 @@ namespace CANableSharp
                     // TODO: dispose managed state (managed objects).
                 }
 
-                candle_dev_close(handle);
+                if (opened)
+                {
+                    candle_dev_close(handle);
+                }
                 candle_dev_free(handle);
 
                 // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.

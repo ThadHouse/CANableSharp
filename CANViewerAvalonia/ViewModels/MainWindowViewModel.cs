@@ -1,4 +1,5 @@
-﻿using CANViewer.Models;
+﻿using CANableSharp;
+using CANViewer.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

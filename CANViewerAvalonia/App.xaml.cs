@@ -14,9 +14,9 @@ namespace CANViewerAvalonia
         public override void OnFrameworkInitializationCompleted()
         {
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
-                desktop.MainWindow = new MainWindow();
+                desktop.MainWindow = new DeviceSelection();
             else if (ApplicationLifetime is ISingleViewApplicationLifetime singleView)
-                singleView.MainView = new MainWindow();
+                singleView.MainView = new DeviceSelection();
             base.OnFrameworkInitializationCompleted();
         }
     }

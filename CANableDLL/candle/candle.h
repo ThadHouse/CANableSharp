@@ -140,6 +140,13 @@ __declspec(dllexport) wchar_t * __cdecl candle_dev_get_path(candle_handle hdev);
 #else
 __declspec(dllexport) char* __cdecl candle_dev_get_path(candle_handle hdev);
 #endif
+
+#ifdef UNICODE
+__declspec(dllexport) wchar_t* __cdecl candle_dev_get_name(candle_handle hdev);
+#else
+__declspec(dllexport) char* __cdecl candle_dev_get_name(candle_handle hdev);
+#endif
+
 bool DLL candle_dev_open(candle_handle hdev);
 bool DLL candle_dev_get_timestamp_us(candle_handle hdev, uint32_t *timestamp_us);
 bool DLL candle_dev_close(candle_handle hdev);

@@ -33,6 +33,22 @@
 #undef DLL
 #define DLL
 
+static bool candle_read_device_name(HDEVINFO hdi, SP_DEVINFO_DATA* spDevInfoData, candle_device_t* dev)
+{
+	DWORD DataT;
+	DWORD nSize = 0;
+	dev->name[0] = '\0';
+	if (SetupDiGetDeviceRegistryProperty(hdi, spDevInfoData,
+		SPDRP_FRIENDLYNAME, &DataT, (PBYTE)dev->name, sizeof(dev->name) / sizeof(dev->name[0]), &nSize)) {
+		return true;
+	}
+	else {
+		swprintf(dev->name, sizeof(dev->name) / sizeof(dev->name[0]), L"Error: Failed to read name");
+		return false;
+	}
+}
+
+
 static bool candle_dev_interal_open(candle_handle hdev);
 
 static bool candle_read_di(HDEVINFO hdi, SP_DEVICE_INTERFACE_DATA interfaceData, candle_device_t *dev)
@@ -136,6 +152,15 @@ bool __cdecl candle_list_scan(candle_list_handle *list)
 
         }
 
+		SP_DEVINFO_DATA devInfoData;
+		devInfoData.cbSize = sizeof(SP_DEVINFO_DATA);
+		if (SetupDiEnumDeviceInfo(hdi, i, &devInfoData)) {
+			candle_read_device_name(hdi, &devInfoData, &l->dev[i]);
+		}
+		else {
+			swprintf(l->dev[i].name, sizeof(l->dev[i].name) / sizeof(l->dev[i].name[0]), L"Unknown");
+		}
+
     }
 
     SetupDiDestroyDeviceInfoList(hdi);
@@ -212,6 +237,21 @@ char* __cdecl DLL candle_dev_get_path(candle_handle hdev)
         candle_device_t *dev = (candle_device_t*)hdev;
         return dev->path;
     }
+}
+
+#ifdef UNICODE
+wchar_t* __cdecl DLL candle_dev_get_name(candle_handle hdev)
+#else
+char* __cdecl DLL candle_dev_get_name(candle_handle hdev)
+#endif
+{
+	if (hdev == NULL) {
+		return NULL;
+	}
+	else {
+		candle_device_t* dev = (candle_device_t*)hdev;
+		return dev->name;
+	}
 }
 
 static bool candle_dev_interal_open(candle_handle hdev)

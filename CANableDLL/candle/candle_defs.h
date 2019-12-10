@@ -72,6 +72,11 @@ typedef struct {
 #else
     char path[256];
 #endif
+#ifdef UNICODE
+	wchar_t name[256];
+#else
+	char name[256];
+#endif
     candle_devstate_t state;
     candle_err_t last_error;
 

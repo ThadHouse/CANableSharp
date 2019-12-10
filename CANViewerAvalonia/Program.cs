@@ -1,6 +1,7 @@
 ﻿using System;
 using Avalonia;
 using Avalonia.Logging.Serilog;
+using CANableSharp;
 
 namespace CANViewerAvalonia
 {
@@ -13,6 +14,7 @@ namespace CANViewerAvalonia
         // yet and stuff might break.
         public static void Main(string[] args)
         {
+            CandleInvoke.Initialize();
             BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
         }
 

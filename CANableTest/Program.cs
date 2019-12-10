@@ -7,7 +7,12 @@ namespace CANableTest
     {
         static void Main(string[] args)
         {
+            CandleInvoke.Initialize();
             var devices = CANable.EnumerateDevices();
+            foreach (var d in devices)
+            {
+                Console.WriteLine(d.Name);
+            }
             // Dispose all but the first one
             if (devices.Count == 0)
             {

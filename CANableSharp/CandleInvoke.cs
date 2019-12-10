@@ -175,7 +175,12 @@ namespace CANableSharp
             return m_candleApi.candle_dev_get_path(hdev);
         }
 
-        
+        public static ushort* candle_dev_get_name(IntPtr hdev)
+        {
+            return m_candleApi.candle_dev_get_name(hdev);
+        }
+
+
         public static byte candle_dev_open(IntPtr hdev)
         {
             return m_candleApi.candle_dev_open(hdev);

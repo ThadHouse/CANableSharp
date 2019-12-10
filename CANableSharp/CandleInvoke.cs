@@ -128,9 +128,9 @@ namespace CANableSharp
             const string resourceRoot = "CANableSharp.";
 
             nativeLoader.AddLibraryLocation(OsType.Windows32,
-                resourceRoot + "CANableDLLx86.dll");
+                resourceRoot + "CANableDLL.dll");
             nativeLoader.AddLibraryLocation(OsType.Windows64,
-                resourceRoot + "CANableDLLx64.dll");
+                resourceRoot + "CANableDLL.dll");
             nativeLoader.LoadNativeLibraryFromReflectedAssembly("CANableSharp");
             
             var candle = nativeLoader.LoadNativeInterface<ICandleAPI>();

@@ -5,11 +5,13 @@
     <PublishTrimmed>true</PublishTrimmed>
     <PublishReadyToRun>true</PublishReadyToRun>
     <PublishSingleFile>true</PublishSingleFile>
-    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <RuntimeIdentifier Condition=" '$(Platform)' == 'x64' ">win-x64</RuntimeIdentifier>
+    <RuntimeIdentifier Condition=" '$(Platform)' == 'x86' ">win-x86</RuntimeIdentifier>
     <ApplicationIcon />
     <StartupObject />
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <AssemblyName>FRC-CANReader</AssemblyName>
+    <Platforms>x64;x86</Platforms>
   </PropertyGroup>
   <ItemGroup>
     <Compile Update="**\*.xaml.cs">

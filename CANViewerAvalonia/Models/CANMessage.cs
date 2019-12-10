@@ -53,7 +53,7 @@ namespace CANViewer.Models
         public Manufacturer Manufacturer => (Manufacturer)((rawId >> 16) & 0xFF);
         public uint ApiId => (rawId >> 6) & 0x3FF;
         public uint DeviceId => rawId & 0x3F;
-        private byte[] data = new byte[8];
+        private readonly byte[] data = new byte[8];
 
         public Memory<byte> Data => data.AsMemory().Slice(0, (int)DataLength);
         public uint DataLength { get; private set; }

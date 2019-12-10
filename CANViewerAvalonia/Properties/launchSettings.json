@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "CANViewerAvalonia": {
+      "commandName": "Project",
+      "nativeDebugging": true
+    }
+  }
+}

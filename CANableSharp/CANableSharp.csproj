@@ -6,13 +6,16 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>8.0</LangVersion>
     <Nullable>enable</Nullable>
+    <Platforms>x64;x86</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="FRC.Utilities" Version="3.0.3" />
     <PackageReference Include="System.Memory" Version="4.5.3" />
-    <EmbeddedResource Include="..\x64\Release\CANableDLLx64.dll"/>
-    <EmbeddedResource Include="..\Release\CANableDLLx86.dll"/>
+    <EmbeddedResource Condition=" '$(Platform)' == 'x64' and '$(Configuration)' == 'Release' " Include="..\x64\Release\CANableDLL.dll" />
+    <EmbeddedResource Condition=" '$(Platform)' == 'x86' and '$(Configuration)' == 'Release' " Include="..\Release\CANableDLL.dll" />
+    <EmbeddedResource Condition=" '$(Platform)' == 'x64' and '$(Configuration)' == 'Debug' " Include="..\x64\Debug\CANableDLL.dll" />
+    <EmbeddedResource Condition=" '$(Platform)' == 'x86' and '$(Configuration)' == 'Debug' " Include="..\Debug\CANableDLL.dll" />
   </ItemGroup>
 
 </Project>

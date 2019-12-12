@@ -10,11 +10,13 @@ namespace CANableSharp
     {
         private readonly IntPtr device;
         private readonly byte channelNum;
+        private readonly ICandleAPI api;
 
-        internal Channel(IntPtr device, byte channelNum)
+        internal Channel(IntPtr device, byte channelNum, ICandleAPI api)
         {
             this.device = device;
             this.channelNum = channelNum;
+            this.api = api;
         }
 
         public unsafe void WriteExtendedFrame(Span<byte> data, uint id, bool rtr = false)
@@ -28,9 +30,9 @@ namespace CANableSharp
             frame.CanDLC = (byte)data.Length;
             frame.CanId = id | (uint)IdMasks.Extended;
             frame.CanId |= (rtr ? (uint)IdMasks.RTR : 0);
-            if (candle_frame_send(device, channelNum, &frame) == 0)
+            if (api.candle_frame_send(device, channelNum, &frame) == 0)
             {
-                throw new CANableException("Error Sending Frame", candle_dev_last_error(device));
+                throw new CANableException("Error Sending Frame", api.candle_dev_last_error(device));
             }
         }
 
@@ -45,32 +47,32 @@ namespace CANableSharp
             frame.CanDLC = (byte)data.Length;
             frame.CanId = id;
             frame.CanId |= (rtr ? (uint)IdMasks.RTR : 0);
-            if (candle_frame_send(device, channelNum, &frame) == 0)
+            if (api.candle_frame_send(device, channelNum, &frame) == 0)
             {
-                throw new CANableException("Error Sending Frame", candle_dev_last_error(device));
+                throw new CANableException("Error Sending Frame", api.candle_dev_last_error(device));
             }
         }
 
         public void Start()
         {
-            if (candle_channel_start(device, channelNum, 0) == 0)
+            if (api.candle_channel_start(device, channelNum, 0) == 0)
             {
-                throw new CANableException("Error Starting Channel", candle_dev_last_error(device));
+                throw new CANableException("Error Starting Channel", api.candle_dev_last_error(device));
             }
         }
 
         public void Stop()
         {
-            candle_channel_stop(device, channelNum);
+            api.candle_channel_stop(device, channelNum);
         }
 
         public uint Bitrate
         {
             set
             {
-                if (candle_channel_set_bitrate(device, channelNum, value) == 0)
+                if (api.candle_channel_set_bitrate(device, channelNum, value) == 0)
                 {
-                    throw new CANableException("Error Setting Bitrate", candle_dev_last_error(device));
+                    throw new CANableException("Error Setting Bitrate", api.candle_dev_last_error(device));
                 }
             }
         }
@@ -79,9 +81,9 @@ namespace CANableSharp
         {
             set
             {
-                if (candle_channel_set_timing(device, channelNum, &value) == 0)
+                if (api.candle_channel_set_timing(device, channelNum, &value) == 0)
                 {
-                    throw new CANableException("Error Setting Timing", candle_dev_last_error(device));
+                    throw new CANableException("Error Setting Timing", api.candle_dev_last_error(device));
                 }
             }
         }
@@ -91,9 +93,9 @@ namespace CANableSharp
             get
             {
                 Capabilities cb;
-                if (candle_channel_get_capabilities(device, channelNum, &cb) == 0)
+                if (api.candle_channel_get_capabilities(device, channelNum, &cb) == 0)
                 {
-                    throw new CANableException("Error Getting Capabilities", candle_dev_last_error(device));
+                    throw new CANableException("Error Getting Capabilities", api.candle_dev_last_error(device));
                 }
                 return cb;
             }

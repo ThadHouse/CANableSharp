@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
-using static CANableSharp.CandleInvoke;
 
 namespace CANableSharp
 {
@@ -13,45 +12,47 @@ namespace CANableSharp
 
         public static List<CANable> EnumerateDevices()
         {
-            
+            var api = CandleInvoke.CandleAPI;
             IntPtr list;
-            if (candle_list_scan(&list) == 0)
+            if (api.candle_list_scan(&list) == 0)
             {
-                var err = candle_list_last_error(list);
+                var err = api.candle_list_last_error(list);
                 throw new EnumerationException($"CANable enumeration failed: {err}", err);
             }
             
             byte len;
-            candle_list_length(list, &len);
+            api.candle_list_length(list, &len);
 
             List<CANable> devices = new List<CANable>(len);
 
             for (int i = 0; i < len; i++)
             {
                 IntPtr hdev;
-                if (candle_dev_get(list, (byte)i, &hdev) != 0)
+                if (api.candle_dev_get(list, (byte)i, &hdev) != 0)
                 {
-                    devices.Add(new CANable(hdev));
+                    devices.Add(new CANable(hdev, api));
                 }
             }
 
-            candle_list_free(list);
+            api.candle_list_free(list);
 
             return devices;
         }
 
-        readonly IntPtr handle;
+        private readonly IntPtr handle;
+        private readonly ICandleAPI api;
 
-        private CANable(IntPtr id)
+        private CANable(IntPtr id, ICandleAPI api)
         {
             this.handle = id;
+            this.api = api;
         }
 
         public string Descriptor
         {
             get
             {
-                return Marshal.PtrToStringUni((IntPtr)candle_dev_get_path(handle));
+                return Marshal.PtrToStringUni((IntPtr)api.candle_dev_get_path(handle));
             }
         }
 
@@ -59,18 +60,18 @@ namespace CANableSharp
         {
             get
             {
-                return Marshal.PtrToStringUni((IntPtr)candle_dev_get_name(handle));
+                return Marshal.PtrToStringUni((IntPtr)api.candle_dev_get_name(handle));
             }
         }
 
-        public DeviceState DeviceState
+        public CandleInvoke.DeviceState DeviceState
         {
             get
             {
-                DeviceState state;
-                if (candle_dev_get_state(handle, &state) == 0)
+                CandleInvoke.DeviceState state;
+                if (api.candle_dev_get_state(handle, &state) == 0)
                 {
-                    throw new CANableException("Error Reading Device State", candle_dev_last_error(handle));
+                    throw new CANableException("Error Reading Device State", api.candle_dev_last_error(handle));
                 }
                 return state;
             }
@@ -83,13 +84,13 @@ namespace CANableSharp
             if (channels != null) return channels;
 
             byte numChannels = 0;
-            candle_channel_count(handle, &numChannels);
+            api.candle_channel_count(handle, &numChannels);
 
             channels = new List<Channel>();
 
             for (int i = 0; i < numChannels; i++)
             {
-                channels.Add(new Channel(handle, (byte)i));
+                channels.Add(new Channel(handle, (byte)i, api));
             }
 
             return channels;
@@ -97,9 +98,9 @@ namespace CANableSharp
 
         public void Open()
         {
-            if (candle_dev_open(handle) == 0)
+            if (api.candle_dev_open(handle) == 0)
             {
-                throw new CANableException("Failed to open device", candle_dev_last_error(handle));
+                throw new CANableException("Failed to open device", api.candle_dev_last_error(handle));
             }
             opened = true;
         }
@@ -109,9 +110,9 @@ namespace CANableSharp
             get
             {
                 uint us;
-                if (candle_dev_get_timestamp_us(handle, &us) == 0)
+                if (api.candle_dev_get_timestamp_us(handle, &us) == 0)
                 {
-                    throw new CANableException("Failed to get time", candle_dev_last_error(handle));
+                    throw new CANableException("Failed to get time", api.candle_dev_last_error(handle));
                 }
                 return TimeSpan.FromMilliseconds(us / 1000.0);
             }
@@ -119,17 +120,17 @@ namespace CANableSharp
 
         public bool ReadFrame(out CANFrame frame, TimeSpan timeout)
         {
-            Frame lowLevelFrame;
+            CandleInvoke.Frame lowLevelFrame;
             uint timeoutMs = (uint)timeout.TotalMilliseconds;
             if (timeout == Timeout.InfiniteTimeSpan)
             {
                 timeoutMs = uint.MaxValue;
             }
             
-            if (candle_frame_read(handle, &lowLevelFrame, timeoutMs) == 0)
+            if (api.candle_frame_read(handle, &lowLevelFrame, timeoutMs) == 0)
             {
-                var err = candle_dev_last_error(handle);
-                if (err == Error.ReadTimeout)
+                var err = api.candle_dev_last_error(handle);
+                if (err == CandleInvoke.Error.ReadTimeout)
                 {
                     frame = default;
                     return false;
@@ -137,7 +138,7 @@ namespace CANableSharp
                 throw new CANableException("Failed to read frame", err);
             }
 
-            frame = new CANFrame(&lowLevelFrame);
+            frame = new CANFrame(&lowLevelFrame, api);
             return true;
         }
 
@@ -160,9 +161,9 @@ namespace CANableSharp
 
                 if (opened)
                 {
-                    candle_dev_close(handle);
+                    api.candle_dev_close(handle);
                 }
-                candle_dev_free(handle);
+                api.candle_dev_free(handle);
 
                 // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
                 // TODO: set large fields to null.

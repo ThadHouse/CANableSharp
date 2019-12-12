@@ -22,15 +22,15 @@ namespace CANableSharp
 
         public uint TimestampUs { get; }
 
-        internal unsafe CANFrame(Frame* lowLevelFrame)
+        internal unsafe CANFrame(Frame* lowLevelFrame, ICandleAPI api)
         {
             RawId = lowLevelFrame->CanId;
-            Id = candle_frame_id(lowLevelFrame);
+            Id = api.candle_frame_id(lowLevelFrame);
             data = lowLevelFrame->Data;
-            DLC = candle_frame_dlc(lowLevelFrame);
-            IsExtended = candle_frame_is_extended_id(lowLevelFrame) != 0;
-            IsRTR = candle_frame_is_rtr(lowLevelFrame) != 0;
-            TimestampUs = candle_frame_timestamp_us(lowLevelFrame);
+            DLC = api.candle_frame_dlc(lowLevelFrame);
+            IsExtended = api.candle_frame_is_extended_id(lowLevelFrame) != 0;
+            IsRTR = api.candle_frame_is_rtr(lowLevelFrame) != 0;
+            TimestampUs = api.candle_frame_timestamp_us(lowLevelFrame);
         }
     }
 }

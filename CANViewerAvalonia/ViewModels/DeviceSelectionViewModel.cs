@@ -42,7 +42,6 @@ namespace CANViewerAvalonia.ViewModels
             if (Design.IsDesignMode) return;
             window.Initialized += (o, e) =>
             {
-                CandleInvoke.Initialize();
                 Refresh();
             };
             

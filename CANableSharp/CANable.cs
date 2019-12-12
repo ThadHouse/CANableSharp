@@ -105,6 +105,13 @@ namespace CANableSharp
             opened = true;
         }
 
+        public void Close()
+        {
+            if (!opened) return;
+            api.candle_dev_close(handle);
+            opened = false;
+        }
+
         public TimeSpan CurrentTime
         {
             get

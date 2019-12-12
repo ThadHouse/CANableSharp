@@ -1,0 +1,20 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="FRC_CAN_Viewer.MainWindow"
+        Title="FRC CAN Viewer">
+  <Grid>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="8*"></ColumnDefinition>
+      <ColumnDefinition Width="2*"></ColumnDefinition>
+    </Grid.ColumnDefinitions>
+    <DataGrid Grid.Column="0" Items="{Binding CANMessages}" x:Name="DataGrid" AutoGenerateColumns="True" CanUserResizeColumns="True">
+    </DataGrid>
+    <StackPanel Grid.Column="1">
+      <Button Command="{Binding Refresh}">Refresh</Button>
+      <ComboBox Items="{Binding CANDevices}" SelectedItem="{Binding SelectedValue, Mode=TwoWay}"></ComboBox>
+    </StackPanel>
+  </Grid>
+</Window>

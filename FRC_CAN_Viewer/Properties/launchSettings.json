@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "CANViewerAvalonia": {
+    "FRC_CAN_Viewer": {
       "commandName": "Project",
       "nativeDebugging": true
     }

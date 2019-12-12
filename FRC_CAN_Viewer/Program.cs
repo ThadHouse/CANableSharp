@@ -3,7 +3,7 @@ using Avalonia;
 using Avalonia.Logging.Serilog;
 using CANableSharp;
 
-namespace CANViewerAvalonia
+namespace FRC_CAN_Viewer
 {
     class Program
     {

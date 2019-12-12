@@ -22,21 +22,10 @@
     </AvaloniaResource>
   </ItemGroup>
   <ItemGroup>
-    <AvaloniaResource Remove="DeviceSelection.xaml" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Remove="DeviceSelection.xaml" />
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="Avalonia" Version="0.9.0-rc.1" />
     <PackageReference Include="Avalonia.Controls.DataGrid" Version="0.9.0-rc.1" />
     <PackageReference Include="Avalonia.Desktop" Version="0.9.0-rc.1" />
     <PackageReference Include="System.Memory" Version="4.5.3" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="DeviceSelection.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CANableSharp\CANableSharp.csproj" />

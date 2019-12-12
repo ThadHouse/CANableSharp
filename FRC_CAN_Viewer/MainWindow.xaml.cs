@@ -11,7 +11,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
 
-namespace CANViewerAvalonia
+namespace FRC_CAN_Viewer
 {
     public class MainWindow : Window
     {
@@ -23,15 +23,11 @@ namespace CANViewerAvalonia
             viewModel = new MainWindowViewModel(this);
             DataContext = viewModel;
             InitializeComponent();
+            viewModel.SetupGeneration();
 
 #if DEBUG
             this.AttachDevTools();
 #endif
-        }
-
-        public void Initialize(CANable device)
-        {
-            viewModel.Initialize(device);
         }
 
         private void InitializeComponent()

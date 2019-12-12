@@ -3,25 +3,96 @@ using Avalonia.Data;
 using Avalonia.Threading;
 using CANableSharp;
 using CANViewer.Models;
-using CANViewerAvalonia;
+using FRC_CAN_Viewer;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 
 namespace CANViewer.ViewModels
 {
-    public class MainWindowViewModel
+    public class MainWindowViewModel : INotifyPropertyChanged
     {
+        public ObservableCollection<CANable> CANDevices { get; } = new ObservableCollection<CANable>();
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected void RaisePropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        private CANable selectedValue;
+
+        public CANable SelectedValue
+        {
+            get => selectedValue;
+            set
+            {
+                UpdateDevice(value, selectedValue);
+                selectedValue = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        public void Refresh()
+        {
+            SelectedValue = null;
+            foreach (var d in CANDevices)
+            {
+                d.Dispose();
+            }
+
+            CANDevices.Clear();
+            var devices = CANable.EnumerateDevices();
+            foreach (var device in devices)
+            {
+                CANDevices.Add(device);
+            }
+
+            if (devices.Count > 0)
+            {
+                SelectedValue = devices[0];
+            }
+            else
+            {
+                SelectedValue = null;
+            }
+        }
+
+        private void UpdateDevice(CANable newValue, CANable oldValue)
+        {
+            if (oldValue != null)
+            {
+                CloseDevice();
+            }
+            if (newValue == null)
+            {
+                CANMessages.Clear();
+                return;
+            }
+            Initialize(newValue);
+        }
+
+        private void CloseDevice()
+        {
+            keepGoing = false;
+            readThread.Join();
+
+            channel.Stop();
+            selectedValue.Close();
+        }
+
         public ObservableCollection<CANMessage> CANMessages { get; } = new ObservableCollection<CANMessage>();
 
         private MainWindow window;
         private volatile bool keepGoing;
         private Thread readThread;
-        private CANable device;
         private Channel channel;
 
         public MainWindowViewModel(MainWindow window)
@@ -29,13 +100,18 @@ namespace CANViewer.ViewModels
             this.window = window;
         }
 
-        public void Initialize(CANable device)
+        public void SetupGeneration()
         {
-            this.device = device;
             var grid = window.Get<DataGrid>("DataGrid");
             grid.AutoGeneratingColumn += DataGrid_AutoGeneratingColumn;
             window.Closing += Window_Closing;
+            Refresh();
+        }
 
+        private void Initialize(CANable device)
+        {
+            CANMessages.Clear();
+            
             if (Design.IsDesignMode) return;
 
             // Device will not be opened
@@ -54,7 +130,7 @@ namespace CANViewer.ViewModels
         {
             while (keepGoing)
             {
-                if (device.ReadFrame(out var frame, TimeSpan.FromSeconds(1)))
+                if (selectedValue.ReadFrame(out var frame, TimeSpan.FromSeconds(1)))
                 {
                     ulong data = frame.DataLong;
                     var dlc = frame.DLC;
@@ -83,6 +159,10 @@ namespace CANViewer.ViewModels
 
                     Dispatcher.UIThread.InvokeAsync(toInvoke);
                 }
+                else
+                {
+                    ;
+                }
             }
         }
 
@@ -90,12 +170,13 @@ namespace CANViewer.ViewModels
         {
             if (Design.IsDesignMode) return;
 
-            keepGoing = false;
-            readThread.Join();
+            CloseDevice();
 
-            channel.Stop();
-            device.Dispose();
-            
+            foreach (var device in CANDevices)
+            {
+                device.Dispose();
+            }
+
         }
 
         private void DataGrid_AutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)

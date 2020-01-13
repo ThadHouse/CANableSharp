@@ -13,6 +13,7 @@
     <DataGrid Grid.Column="0" Items="{Binding CANMessages}" x:Name="DataGrid" AutoGenerateColumns="True" CanUserResizeColumns="True">
     </DataGrid>
     <StackPanel Grid.Column="1">
+      <TextBlock>Configuration</TextBlock>
       <Button Command="{Binding Refresh}">Refresh</Button>
       <ComboBox Items="{Binding CANDevices}" SelectedItem="{Binding SelectedValue, Mode=TwoWay}"></ComboBox>
     </StackPanel>

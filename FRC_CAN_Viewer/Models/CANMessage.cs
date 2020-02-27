@@ -20,6 +20,7 @@ namespace CANViewer.Models
         kPowerDistribution = 8,
         kPneumatics = 9,
         kMiscellaneous = 10,
+        kIOBreakout = 11,
         kFirmwareUpdate = 31
     }
 

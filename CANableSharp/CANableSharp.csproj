@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="FRC.Utilities" Version="3.0.3" />
+    <PackageReference Include="FRC.Utilities" Version="3.0.4" />
     <PackageReference Include="System.Memory" Version="4.5.3" />
     <EmbeddedResource Condition=" '$(Platform)' == 'x64' and '$(Configuration)' == 'Release' " Include="..\x64\Release\CANableDLL.dll" />
     <EmbeddedResource Condition=" '$(Platform)' == 'x86' and '$(Configuration)' == 'Release' " Include="..\Release\CANableDLL.dll" />

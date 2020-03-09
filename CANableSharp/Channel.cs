@@ -63,7 +63,7 @@ namespace CANableSharp
 
         public void Stop()
         {
-            api.candle_channel_stop(device, channelNum);
+            api?.candle_channel_stop(device, channelNum);
         }
 
         public uint Bitrate

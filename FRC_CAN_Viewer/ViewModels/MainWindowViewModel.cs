@@ -82,10 +82,10 @@ namespace CANViewer.ViewModels
         private void CloseDevice()
         {
             keepGoing = false;
-            readThread.Join();
+            readThread?.Join();
 
             channel.Stop();
-            selectedValue.Close();
+            selectedValue?.Close();
         }
 
         public ObservableCollection<CANMessage> CANMessages { get; } = new ObservableCollection<CANMessage>();
@@ -117,7 +117,14 @@ namespace CANViewer.ViewModels
             // Device will not be opened
             device.Open();
             channel = device.GetChannels()[0];
-            channel.Bitrate = 1_000_000;
+            try
+            {
+                channel.Bitrate = 1_000_000;
+            }
+            catch (CANableException)
+            {
+                
+            }
             channel.Start();
 
             readThread = new Thread(ReadThreadMain);
@@ -126,42 +133,58 @@ namespace CANViewer.ViewModels
             readThread.Start();
         }
 
+        public void ArbCalc()
+        {
+
+        }
+
         private unsafe void ReadThreadMain()
         {
             while (keepGoing)
             {
-                if (selectedValue.ReadFrame(out var frame, TimeSpan.FromSeconds(1)))
+                try
                 {
-                    ulong data = frame.DataLong;
-                    var dlc = frame.DLC;
-                    var id = frame.RawId;
-                    var ts = frame.TimestampUs;
-
-                    // Valid
-                    Action toInvoke = () =>
+                    if (selectedValue.ReadFrame(out var frame, TimeSpan.FromSeconds(1)))
                     {
-                        ulong store = data;
+                        ulong data = frame.DataLong;
+                        var dlc = frame.DLC;
+                        var id = frame.RawId;
+                        var ts = frame.TimestampUs;
 
-                        Span<byte> sData = MemoryMarshal.Cast<ulong, byte>(new Span<ulong>(&store, 1)).Slice(0, (int)dlc);
-
-                        var msg = CANMessages.Where(x => x.rawId == id).FirstOrDefault();
-                        if (msg != null)
+                        // Valid
+                        Action toInvoke = () =>
                         {
-                                // Update message
-                                msg.UpdateData(sData, ts);
+                            ulong store = data;
 
-                        }
-                        else
-                        {
-                            CANMessages.Add(new CANViewer.Models.CANMessage(id, sData, ts));
-                        }
-                    };
+                            Span<byte> sData = MemoryMarshal.Cast<ulong, byte>(new Span<ulong>(&store, 1)).Slice(0, (int)dlc);
 
-                    Dispatcher.UIThread.InvokeAsync(toInvoke);
+                            var msg = CANMessages.Where(x => x.rawId == id).FirstOrDefault();
+                            if (msg != null)
+                            {
+                            // Update message
+                            msg.UpdateData(sData, ts);
+
+                            }
+                            else
+                            {
+                                CANMessages.Add(new CANViewer.Models.CANMessage(id, sData, ts));
+                            }
+                        };
+
+                        Dispatcher.UIThread.InvokeAsync(toInvoke);
+                    }
+                    else
+                    {
+                        ;
+                    }
                 }
-                else
+                catch (CANableException)
                 {
-                    ;
+                    // Disconnected
+                    Dispatcher.UIThread.InvokeAsync(() =>
+                    {
+                        Refresh();
+                    });
                 }
             }
         }

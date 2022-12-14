@@ -60,6 +60,8 @@ namespace CANViewer.Models
         public uint DataLength { get; private set; }
         public uint TimeStamp { get; private set; }
 
+        public uint Delta { get; private set; }
+
         public CANMessage(uint rawId, Span<byte> data, uint ts)
         {
             this.rawId = rawId;
@@ -72,10 +74,12 @@ namespace CANViewer.Models
         {
             DataLength = (uint)data.Length;
             data.CopyTo(this.data);
+            Delta = ts - TimeStamp;
             TimeStamp = ts;
             RaisePropertyChanged(nameof(TimeStamp));
             RaisePropertyChanged(nameof(Data));
             RaisePropertyChanged(nameof(DataLength));
+            RaisePropertyChanged(nameof(Delta));
         }
 
         protected bool RaiseAndSetIfChanged<T>(ref T field, T value, [CallerMemberName] string propertyName = null)

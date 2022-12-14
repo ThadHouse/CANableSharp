@@ -111,13 +111,17 @@ namespace CANViewer.ViewModels
         private void Initialize(CANable device)
         {
             CANMessages.Clear();
-            
+
             if (Design.IsDesignMode) return;
 
             // Device will not be opened
             device.Open();
             channel = device.GetChannels()[0];
-            channel.Bitrate = 1_000_000;
+            try {
+                channel.Bitrate = 1_000_000;
+            } catch {
+                // Ignore, the Spark Max can't take this flag
+            }
             channel.Start();
 
             readThread = new Thread(ReadThreadMain);

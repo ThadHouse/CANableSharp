@@ -82,10 +82,10 @@ namespace CANViewer.ViewModels
         private void CloseDevice()
         {
             keepGoing = false;
-            readThread.Join();
+            readThread?.Join();
 
             channel.Stop();
-            selectedValue.Close();
+            selectedValue?.Close();
         }
 
         public ObservableCollection<CANMessage> CANMessages { get; } = new ObservableCollection<CANMessage>();
